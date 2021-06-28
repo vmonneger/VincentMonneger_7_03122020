@@ -12,7 +12,7 @@ const User = require('../models/User');
 //             email: req.body.email,
 //             password: hash 
 //         });
-//         Customer.create(customer, (err, data) => {
+//         User.create(user, (err, data) => {
 //             if (err)
 //               res.status(500).send({
 //                 message:
@@ -27,7 +27,7 @@ const User = require('../models/User');
 // exports.login = (req, res, next) => {
 
 // };
-exports.signup = (req, res) => {
+exports.signup = (req, res, next) => {
     // Validate request
     if (!req.body) {
       res.status(400).send({
