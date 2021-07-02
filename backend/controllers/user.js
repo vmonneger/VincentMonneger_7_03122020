@@ -3,53 +3,62 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 
-// exports.signup = (req, res, next) => {
-//     bcrypt.hash(req.body.password, 10)
-//     .then(hash => {
-//         const user = new User({
-//             nom: req.body.nom,
-//             prenom: req.body.prenom,
-//             email: req.body.email,
-//             password: hash 
-//         });
-//         User.create(user, (err, data) => {
-//             if (err)
-//               res.status(500).send({
-//                 message:
-//                   err.message || "Some error occurred while creating the Customer."
-//               });
-//             else res.send(data);
-//         });
-//     })
-//     .catch(error => res.status(500).json({ error }));
-// };
 
-// exports.login = (req, res, next) => {
-
-// };
-exports.signup = (req, res, next) => {
-    // Validate request
-    if (!req.body) {
-      res.status(400).send({
-        message: "Content can not be empty!"
+exports.createUser = (req, res, next) => {
+  bcrypt.hash(req.body.password, 10)
+  .then(hash => {
+    const newUser = new User({
+      nom: req.body.nom,
+      prenom: req.body.prenom,
+      email: req.body.email,
+      password: hash
+    })
+    // Requete valide si l'objet est inferieur au 4 colonnes de la db erreur
+    if (req.body.constructor === Object && Object.keys(req.body).length < 4) {
+      res.status(400).json({ error: "Vous devez remplir tous les champs." }) 
+    } else {
+      User.create(newUser, (err, result) => {
+        if (err) {
+          res.status(500).json({ error: err });
+        }
+        res.status(201).json({ message: "Utilisateur enregistré !", data: result });
       });
     }
+  })
+  .catch(error => res.status(500).json({ error: "Veuillez choisir votre mot de passe." }));
+};
+
+exports.deleteUser = (req, res, next) => {
+  User.delete(req.params.id, (err, result) => {
+    if (err || !result) {
+      res.status(400).json({ error: "Utilisateur introuvable." });
+    } else {
+      console.log("control user supp")
+      res.status(201).json({ message: "Utilisateur supprimé !" });
+    }
+  });
+};
   
-    // Create a Customer
-    const user = new User({
-        nom: req.body.nom,
-        prenom: req.body.prenom,
-        email: req.body.email,
-        password: req.body.password
-    });
-  
-    // Save Customer in the database
-    User.create(user, (err, data) => {
-      if (err)
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Customer."
+exports.loginUser = (req, res, next) => {
+  User.login(req.body.email, (err, result) => {
+    if (err || !result || req.body.email === "") {
+      res.status(500).json({ error: "Email invalide." });
+    } else {
+      bcrypt.compare(req.body.password, result[0].password)
+      .then(valid => {
+        if (!valid) {
+          res.status(401).json({ error: "Mot de passe incorect." });
+        }
+        res.status(201).json({
+          userId: result[0].id, 
+          token: jwt.sign(
+            { userId: result[0].id },
+            'RANDOM_TOKEN_SECRET',
+            { expiresIn: '24h' }
+          )
         });
-      else res.send(data);
-    });
-  };
+      })
+      .catch(error => res.status(400).json({ error: error }));
+    }
+  });
+};
