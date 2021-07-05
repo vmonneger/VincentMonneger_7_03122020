@@ -28,17 +28,6 @@ exports.createUser = (req, res, next) => {
   .catch(error => res.status(500).json({ error: "Veuillez choisir votre mot de passe." }));
 };
 
-exports.deleteUser = (req, res, next) => {
-  User.delete(req.params.id, (err, result) => {
-    if (err || !result) {
-      res.status(400).json({ error: "Utilisateur introuvable." });
-    } else {
-      console.log("control user supp")
-      res.status(201).json({ message: "Utilisateur supprimé !" });
-    }
-  });
-};
-  
 exports.loginUser = (req, res, next) => {
   User.login(req.body.email, (err, result) => {
     if (err || !result || req.body.email === "") {
@@ -59,6 +48,17 @@ exports.loginUser = (req, res, next) => {
         });
       })
       .catch(error => res.status(400).json({ error: error }));
+    }
+  });
+};
+
+exports.deleteUser = (req, res, next) => {
+  User.delete(req.params.id, (err, result) => {
+    if (err || !result) {
+      res.status(400).json({ error: "Utilisateur introuvable." });
+    } else {
+      console.log("control user supp")
+      res.status(201).json({ message: "Utilisateur supprimé !" });
     }
   });
 };
