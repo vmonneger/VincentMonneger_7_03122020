@@ -12,7 +12,7 @@ const User = function(user) {
 User.create = (newUser, result) => {
     dbConnection.query("INSERT INTO users SET ?", newUser, (err, res) => {
         if (err) {
-            console.log("error: ", err);
+            console.log(err);
             result(null, err);
         } else {
             console.log("User créé !");
@@ -23,8 +23,9 @@ User.create = (newUser, result) => {
 
 User.login = (email, result) => {
     dbConnection.query("SELECT * FROM users WHERE email = ?", email, (err, res) => {
+        // Si array vide renvoie une erreur en vérifiant avec res.length
         if (err || !res.length) {
-            console.log("error: ", err);
+            console.log("error:", err);
             result(null, err);
         } else {
             console.log("Bienvenue !");
@@ -35,6 +36,7 @@ User.login = (email, result) => {
 
 User.delete = (id, result) => {
     dbConnection.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
+        // affectedRows si aucune ligne dans la BDD n'a été supprimé
         if (err || res.affectedRows === 0) {
             console.log("error: ", err);
             result(null, err);

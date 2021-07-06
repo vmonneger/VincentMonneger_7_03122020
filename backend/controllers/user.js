@@ -5,33 +5,40 @@ const User = require('../models/User');
 
 
 exports.createUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
-  .then(hash => {
-    const newUser = new User({
-      nom: req.body.nom,
-      prenom: req.body.prenom,
-      email: req.body.email,
-      password: hash
-    })
-    // Requete valide si l'objet est inferieur au 4 colonnes de la db erreur
-    if (req.body.constructor === Object && Object.keys(req.body).length < 4) {
-      res.status(400).json({ error: "Vous devez remplir tous les champs." }) 
-    } else {
+  if (!req.body.nom) {
+    res.status(403).json({ error: "Vous devez renseigner votre nom." }) 
+  } else if (!req.body.prenom) {
+    res.status(403).json({ error: "Vous devez renseigner votre prénom." }) 
+  } else if (!req.body.email) {
+    res.status(403).json({ error: "Vous devez renseigner votre email." }) 
+  } else if (!req.body.password) {
+    res.status(403).json({ error: "Vous devez renseigner votre mot de passe." }) 
+  } else {
+    bcrypt.hash(req.body.password, 10)
+    .then(hash => {
+      const newUser = new User({
+        nom: req.body.nom,
+        prenom: req.body.prenom,
+        email: req.body.email,
+        password: hash
+      })
       User.create(newUser, (err, result) => {
-        if (err) {
-          res.status(500).json({ error: err });
+        // Erreur de duplication mysql 1062
+        if (err || result.errno === 1062) {
+          res.status(400).json({ error: "Cet email est déjà utilisé." });
+        } else {
+          res.status(201).json({ message: "Utilisateur enregistré !" });
         }
-        res.status(201).json({ message: "Utilisateur enregistré !", data: result });
       });
-    }
-  })
-  .catch(error => res.status(500).json({ error: "Veuillez choisir votre mot de passe." }));
+    })
+    .catch(error => res.status(500).json({ error: "Erreur cryptage." }));
+  }
 };
 
 exports.loginUser = (req, res, next) => {
   User.login(req.body.email, (err, result) => {
-    if (err || !result || req.body.email === "") {
-      res.status(500).json({ error: "Email invalide." });
+    if (err || !result || !req.body.email) {
+      res.status(400).json({ error: "Email invalide." });
     } else {
       bcrypt.compare(req.body.password, result[0].password)
       .then(valid => {
@@ -57,7 +64,6 @@ exports.deleteUser = (req, res, next) => {
     if (err || !result) {
       res.status(400).json({ error: "Utilisateur introuvable." });
     } else {
-      console.log("control user supp")
       res.status(201).json({ message: "Utilisateur supprimé !" });
     }
   });
