@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express');
 
 const userRoute = require("./routes/user");
+const articleRoute = require("./routes/article");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 app.use("/api/auth", userRoute);
+app.use("/api/auth", articleRoute);
 
 
 module.exports = app;
