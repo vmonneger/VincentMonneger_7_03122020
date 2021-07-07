@@ -3,6 +3,7 @@ const express = require('express');
 
 const userRoute = require("./routes/user");
 const articleRoute = require("./routes/article");
+const commentaireRoute = require("./routes/commentaire");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/api/auth", userRoute);
 app.use("/api/auth", articleRoute);
+app.use("/api/auth", commentaireRoute);
 
 
 module.exports = app;

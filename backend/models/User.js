@@ -38,7 +38,7 @@ User.delete = (id, result) => {
     dbConnection.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
         // affectedRows si aucune ligne dans la BDD n'a été supprimé
         if (err || res.affectedRows === 0) {
-            console.log("error: ", err);
+            console.log(err);
             result(null, err);
         } else {
             console.log("User supprimé !");
