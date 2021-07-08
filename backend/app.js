@@ -1,11 +1,14 @@
 require('dotenv').config()
 const express = require('express');
+const helmet = require("helmet");
 
 const userRoute = require("./routes/user");
 const articleRoute = require("./routes/article");
 const commentaireRoute = require("./routes/commentaire");
 
 const app = express();
+
+app.use(helmet());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

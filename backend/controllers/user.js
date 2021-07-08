@@ -5,14 +5,18 @@ const User = require('../models/User');
 
 
 exports.createUser = (req, res, next) => {
-  if (!req.body.nom) {
+  nospecialRegex = /^\S[^*|\":<>[\]{}`\\()';@&$]+$/g;
+  nospecialRegex2 = /^\S[^*|\":<>[\]{}`\\()';@&$]+$/g;
+  emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+  passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/g;
+  if (!nospecialRegex.test(req.body.nom)) {
     res.status(403).json({ error: "Vous devez renseigner votre nom." }) 
-  } else if (!req.body.prenom) {
+  } else if (!nospecialRegex2.test(req.body.prenom)) {
     res.status(403).json({ error: "Vous devez renseigner votre prénom." }) 
-  } else if (!req.body.email) {
-    res.status(403).json({ error: "Vous devez renseigner votre email." }) 
-  } else if (!req.body.password) {
-    res.status(403).json({ error: "Vous devez renseigner votre mot de passe." }) 
+  } else if (!emailRegex.test(req.body.email)) {
+    res.status(403).json({ error: "Votre email n'est pas conforme." }) 
+  } else if (!passwordRegex.test(req.body.password)) {
+    res.status(403).json({ error: "Votre mot de passe doit contenir minimum 8 charactères, une majuscule et un chiffre." }) 
   } else {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
@@ -46,9 +50,9 @@ exports.loginUser = (req, res, next) => {
           res.status(401).json({ error: "Mot de passe incorect." });
         }
         res.status(201).json({
-          userId: result[0].id, 
+          user_id: result[0].id,
           token: jwt.sign(
-            { userId: result[0].id },
+            { user_id: result[0].id },
             'RANDOM_TOKEN_SECRET',
             { expiresIn: '24h' }
           )
