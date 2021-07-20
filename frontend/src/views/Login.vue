@@ -28,7 +28,11 @@
 </template>
 
 <script>
+const axios = require('axios');
+// import {useRouter} from "vue-router";
+// const router = useRouter();
   export default {
+    name: 'Login',
     data() {
       return {
         form: {
@@ -40,21 +44,19 @@
     },
     methods: {
       onSubmit(event) {
-        event.preventDefault()
-        alert(JSON.stringify(this.form))
-      },
-      onReset(event) {
-        event.preventDefault()
-        // Reset our form values
-        this.form.email = ''
-        this.form.name = ''
-        this.form.food = null
-        this.form.checked = []
-        // Trick to reset/clear native browser form validation state
-        this.show = false
-        this.$nextTick(() => {
-          this.show = true
+        axios.post(`http://localhost:3000/api/auth/login`, {
+        email: this.form.email,
+        password: this.form.password
         })
+        .then(function (response) {
+          localStorage.setItem("token", response.data.token)
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+        event.preventDefault()
+        this.$router.push('/article')
       }
     }
   }

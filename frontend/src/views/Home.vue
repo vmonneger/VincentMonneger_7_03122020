@@ -1,4 +1,6 @@
-
+<template>
+  <h1>La page HOME</h1>
+</template>
 
 <script>
 

@@ -1,57 +1,80 @@
 <template>
 <div class="container">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="wrapper wrapper-content animated fadeInRight">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="wrapper wrapper-content animated fadeInRight">
 
-                <div class="ibox-content m-b-sm border-bottom">
-                    <div class="p-xs">
-                        <h2>Bienvennue dans le forum</h2>
-                    </div>
-                </div>
-
-                <div class="ibox-content forum-container">
-
-                    <div class="forum-title">
-                        <div class="pull-right forum-desc">
-                            <samll>Total d'article: 320,800</samll>
-                        </div>
-                        <h3>Tous les articles postés</h3>
-                    </div>
-
-                    <div class="forum-item active">
-                        <div class="row">
-                            <div class="col-md-9">
-                                <div class="forum-icon">
-                                    <i class="fa fa-shield"></i>
-                                </div>
-                                <a href="forum_post.html" class="forum-item-title">Titre de l'article</a>
-                                <div class="forum-sub-title">Le commentaire description........</div>
-                            </div>
-                            <div class="col-md-1 forum-info">
-                                <span class="views-number">
-                                    1216
-                                </span>
-                                <div>
-                                    <small>Vues</small>
-                                </div>
-                            </div>
-                            <div class="col-md-2 forum-info">
-                                <span class="views-number">
-                                    368
-                                </span>
-                                <div>
-                                    <small>Commentaires</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="ibox-content m-b-sm border-bottom">
+          <div class="p-xs">
+            <h2>Bienvennue dans le forum</h2>
+          </div>
         </div>
+
+        <div class="ibox-content forum-container">
+
+          <div class="forum-title">
+            <div class="pull-right forum-desc">
+              <small>Total d'article: 320,800</small>
+            </div>
+            <h3>Le titre</h3>
+          </div>
+
+          <div class="forum-item active" v-for="article in articles" :key="article">
+            <div class="row">
+              <div class="col-md-9">
+                <div class="forum-icon">
+                    <i class="fa fa-shield"></i>
+                </div>
+                <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-item-title">{{article.titre}}</router-link>
+                <div class="forum-sub-title">{{article.contenu}}</div>
+              </div>
+              <div class="col-md-1 forum-info">
+                <span class="views-number">
+                    {{ article.date }}
+                </span>
+                <div>
+                    <small>Vues</small>
+                </div>
+              </div>
+              <div class="col-md-2 forum-info">
+                <span class="views-number">
+                    368
+                </span>
+                <div>
+                    <small>Commentaires</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 </template>
+
+<script>
+const axios = require('axios');
+export default {
+  name: 'Article',
+  data() {
+    return {
+      articles: []
+    }
+  },
+  mounted() {
+    axios.get(`http://localhost:3000/api/auth/allArticle`, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    })
+    .then((response) => {
+      this.articles = response.data
+      console.log("this.articles")
+    })
+  }
+}
+</script>
 
 <style scoped>
 body{margin-top:20px;
@@ -121,7 +144,7 @@ background:#eee;
   border-bottom: 1px solid #f1f1f1;
 }
 .views-number {
-  font-size: 24px;
+  font-size: 15px;
   line-height: 18px;
   font-weight: 400;
 }

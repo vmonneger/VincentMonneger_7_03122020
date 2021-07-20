@@ -19,13 +19,13 @@ Commentaire.create = (newCommentaire, result) => {
     });
 };
 
-Commentaire.getAll = (result) => {
-    dbConnection.query("SELECT * FROM commentaires", (err, res) => {
+Commentaire.getAll = (id, result) => {
+    dbConnection.query("SELECT * FROM commentaires WHERE article_id = ?", id, (err, res) => {
         if (err) {
             console.log(err);
             result(null, err);
         } else {
-            console.log("Les commentaires sont affichés.");
+            console.log(res);
             result(null, res);
         }
     })

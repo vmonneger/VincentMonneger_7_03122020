@@ -27,12 +27,11 @@ exports.createCommentaire =  (req, res, next) => {
   };
   
   exports.getAllCommentaire = (req, res, next) => {
-    Commentaire.getAll((err, result) => {
+    Commentaire.getAll(req.params.id, (err, result) => {
+      console.log(result);
       if (err) {
-        console.log(result);
         res.status(500).json({ error: err });
       } else {
-        console.log(result);
         res.status(201).json(result);
       }
     });
