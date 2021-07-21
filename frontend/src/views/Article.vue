@@ -19,7 +19,7 @@
             <h3>Le titre</h3>
           </div>
 
-          <div class="forum-item active" v-for="article in articles" :key="article">
+          <div v-for="article in articles" :key="article.id" class="forum-item active" >
             <div class="row">
               <div class="col-md-9">
                 <div class="forum-icon">
@@ -70,7 +70,6 @@ export default {
     })
     .then((response) => {
       this.articles = response.data
-      console.log("this.articles")
     })
   }
 }

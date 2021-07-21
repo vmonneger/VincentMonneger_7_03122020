@@ -20,7 +20,7 @@ Commentaire.create = (newCommentaire, result) => {
 };
 
 Commentaire.getAll = (id, result) => {
-    dbConnection.query("SELECT * FROM commentaires WHERE article_id = ?", id, (err, res) => {
+    dbConnection.query("SELECT commentaires.*, users.nom, users.prenom, users.email FROM commentaires LEFT JOIN users on commentaires.user_id = users.id WHERE article_id = ?", id, (err, res) => {
         if (err) {
             console.log(err);
             result(null, err);

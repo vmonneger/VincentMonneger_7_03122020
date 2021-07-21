@@ -32,7 +32,7 @@ Article.getAll = (result) => {
 };
 
 Article.getOne = (id, result) => {
-    dbConnection.query("SELECT * FROM articles WHERE id = ?", id, (err, res) => {
+    dbConnection.query("SELECT articles.*, users.nom, users.prenom FROM articles INNER JOIN users on articles.user_id = users.id WHERE articles.id = ?", id, (err, res) => {
         if (err) {
             console.log(err);
             result(null, err);

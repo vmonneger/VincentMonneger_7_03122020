@@ -34,6 +34,31 @@ User.login = (email, result) => {
     });
 };
 
+User.getOne = (id, result) => {
+    dbConnection.query("SELECT nom, prenom, email FROM users WHERE id = ?", id, (err, res) => {
+        // affectedRows si aucune ligne dans la BDD n'a été supprimé
+        if (err || res.affectedRows === 0) {
+            console.log(err);
+            result(null, err);
+        } else {
+            console.log("User supprimé !");
+            result(null, res);
+        }
+    });
+};
+
+User.getAll = (result) => {
+    dbConnection.query("SELECT id, nom, prenom, email FROM users", (err, res) => {
+        if (err) {
+            console.log(err);
+            result(null, err);
+        } else {
+            console.log("Les users sont affichés.");
+            result(null, res);
+        }
+    })
+};
+
 User.delete = (id, result) => {
     dbConnection.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
         // affectedRows si aucune ligne dans la BDD n'a été supprimé

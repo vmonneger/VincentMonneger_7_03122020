@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-5">
     <h1 class="text-center">Se connecter</h1>
-    <b-form @submit="onSubmit" v-if="show" class="mx-auto w-50">
+    <b-form v-on:submit.prevent="onSubmit" v-if="show" class="mx-auto w-50">
       <b-form-group id="input-group-1" label="Email:" label-for="input-1">
         <b-form-input
           id="input-1"
@@ -21,7 +21,7 @@
       </b-form-group>
 
         <div class="text-center">
-            <b-button type="submit" variant="primary">S'enregistrer</b-button>
+            <b-button type="submit" variant="primary">Se connecter</b-button>
         </div>
     </b-form>
   </div>
@@ -43,20 +43,20 @@ const axios = require('axios');
       }
     },
     methods: {
-      onSubmit(event) {
+      onSubmit() {
         axios.post(`http://localhost:3000/api/auth/login`, {
         email: this.form.email,
         password: this.form.password
         })
-        .then(function (response) {
+        .then((response) => {
           localStorage.setItem("token", response.data.token)
+          localStorage.setItem("user_id", response.data.user_id)
           console.log(response);
+          this.$router.push('Article')
         })
         .catch(function (error) {
           console.log(error);
         });
-        event.preventDefault()
-        this.$router.push('/article')
       }
     }
   }

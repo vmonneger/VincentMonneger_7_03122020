@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-5">
     <h1 class="text-center">Créer votre compte</h1>
-    <b-form @submit="onSubmit" v-if="show" class="mx-auto w-50">
+    <b-form v-on:submit.prevent="onSubmit" v-if="show" class="mx-auto w-50">
       <b-form-group id="input-group-1" label="Nom:" label-for="input-1">
         <b-form-input
           id="input-1"
@@ -61,7 +61,7 @@ const axios = require('axios');
       }
     },
     methods: {
-      onSubmit(event) {
+      onSubmit() {
         axios.post(`http://localhost:3000/api/auth/signup`, {
         nom: this.form.nom,
         prenom: this.form.prenom,
@@ -74,7 +74,6 @@ const axios = require('axios');
         .catch(function (error) {
           console.log(error);
         });
-        event.preventDefault()
       }
     }
   }

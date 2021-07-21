@@ -63,6 +63,28 @@ exports.loginUser = (req, res, next) => {
   });
 };
 
+exports.getOneUser = (req, res, next) => {
+  User.getOne(req.params.id, (err, result) => {
+    if (err || !result) {
+      res.status(400).json({ error: "Utilisateur introuvable." });
+    } else {
+      res.status(201).json(result);
+    }
+  });
+};
+
+exports.getAllUser = (req, res, next) => {
+  User.getAll((err, result) => {
+    if (err) {
+      console.log(result);
+      res.status(500).json({ error: err });
+    } else {
+      console.log(result);
+      res.status(201).json(result);
+    }
+  });
+};
+
 exports.deleteUser = (req, res, next) => {
   User.delete(req.params.id, (err, result) => {
     if (err || !result) {
