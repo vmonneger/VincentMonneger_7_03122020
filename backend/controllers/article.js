@@ -77,3 +77,24 @@ exports.deleteArticle = (req, res, next) => {
     }
   })
 };
+
+exports.totalArticle = (req, res, next) => {
+  Article.total((err, result) => {
+    if (err) {
+      res.status(400).json({ error: err });
+    } else {
+      res.status(201).json(result);
+    }
+  })
+};
+
+exports.allArticleUser = (req, res, next) => {
+  Article.getAllUser(req.params.id, (err, result) => {
+    console.log(result);
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.status(201).json(result);
+    }
+  });
+};

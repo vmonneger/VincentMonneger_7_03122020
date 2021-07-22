@@ -44,9 +44,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "user" */ '../views/User.vue')
   },
   {
-    path: '/post/:id',
-    name: 'User',
-    component: () => import(/* webpackChunkName: "user" */ '../views/User.vue')
+    path: '/postCommentaire/:id',
+    name: 'PostCommentaire',
+    component: () => import(/* webpackChunkName: "postCommentaire" */ '../views/PostCommentaire.vue')
+  },
+  {
+    path: '/postArticle',
+    name: 'PostArticle',
+    component: () => import(/* webpackChunkName: "postArticle" */ '../views/PostArticle.vue')
   }
 ]
 

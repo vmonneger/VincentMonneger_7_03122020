@@ -6,7 +6,6 @@
         <b-form-input
           id="input-1"
           v-model="form.nom"
-          type="email"
           placeholder="Entrer votre nom"
           required
         ></b-form-input>

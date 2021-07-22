@@ -1,5 +1,5 @@
 <template>
-<div class="container">
+<div v-if="lastCommentaire.length" class="container">
   <div class="row">
     <div class="col-lg-12">
       <div class="wrapper wrapper-content animated fadeInRight">
@@ -9,14 +9,16 @@
             <h2>Bienvennue dans le forum</h2>
           </div>
         </div>
+        <router-link :to="{name: 'Commentaire', params: {id: lastCommentaire[0].article_id} }">
+          <p>Dernier commentaire: {{ lastCommentaire[0].prenom }} {{ lastCommentaire[0].nom }} sur l'article "{{ lastCommentaire[0].titre }}" le {{ lastCommentaire[0].date }}</p>
+        </router-link>
 
         <div class="ibox-content forum-container">
 
           <div class="forum-title">
-            <div class="pull-right forum-desc">
-              <small>Total d'article: 320,800</small>
+            <div v-if="totalArticle.length" class="pull-right forum-desc">
+              <p>Total d'article: {{ totalArticle[0].total }}</p>
             </div>
-            <h3>Le titre</h3>
           </div>
 
           <div v-for="article in articles" :key="article.id" class="forum-item active" >
@@ -44,6 +46,9 @@
                     <small>Commentaires</small>
                 </div>
               </div>
+              <div class="d-flex justify-content-end">
+                <button v-on:click="post()" class="m-0 btn btn-outline-primary">Poster un article</button>
+              </div>
             </div>
           </div>
         </div>
@@ -59,18 +64,32 @@ export default {
   name: 'Article',
   data() {
     return {
-      articles: []
+      articles: [],
+      lastCommentaire: [],
+      totalArticle: []
     }
   },
   mounted() {
-    axios.get(`http://localhost:3000/api/auth/allArticle`, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    })
+    axios.get(`http://localhost:3000/api/auth/allArticle`)
     .then((response) => {
       this.articles = response.data
     })
+    axios.get(`http://localhost:3000/api/auth/lastCommentaire`)
+    .then((response) => {
+      this.lastCommentaire = response.data
+      console.log("le resultat")
+      console.log(this.lastCommentaire)
+    })
+    axios.get(`http://localhost:3000/api/auth/totalArticle`)
+    .then((response) => {
+      this.totalArticle = response.data
+      console.log(this.totalArticle)
+    })
+  },
+  methods: {
+    post() {
+      this.$router.push({ name: 'PostArticle'})
+    }
   }
 }
 </script>

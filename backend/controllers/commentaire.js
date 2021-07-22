@@ -74,3 +74,35 @@ exports.createCommentaire =  (req, res, next) => {
       }
     })
   };
+
+  exports.getLastCommentaireId = (req, res, next) => {
+    Commentaire.lastId((err, result) => {
+      console.log(result);
+      if (err) {
+        res.status(500).json({ error: err });
+      } else {
+        res.status(201).json(result);
+      }
+    });
+  };
+
+  exports.getLastCommentaire = (req, res, next) => {
+    Commentaire.last((err, result) => {
+      console.log(result);
+      if (err) {
+        res.status(500).json({ error: err });
+      } else {
+        res.status(201).json(result);
+      }
+    });
+  };
+
+  exports.totalCommentaire = (req, res, next) => {
+    Commentaire.total(req.params.id, (err, result) => {
+      if (err) {
+        res.status(400).json({ error: err });
+      } else {
+        res.status(201).json(result);
+      }
+    })
+  };
