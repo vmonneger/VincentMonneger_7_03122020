@@ -16,8 +16,8 @@ exports.createArticle =  (req, res, next) => {
       date: new Date()
     })
     Article.create(newArticle, (err, result) => {
-      if (err || result.errno === 1452) {
-        res.status(400).json({ error: "Le user id n'existe pas dans la BDD." });
+      if (err || result.errno === 1406) {
+        res.status(400).json({ error: "Le contenu contient trop de charactères." });
       } else {
         res.status(201).json({ message: "Votre article a été enregistré !" });
       }
@@ -31,7 +31,6 @@ exports.getAllArticle = (req, res, next) => {
       console.log(result);
       res.status(500).json({ error: err });
     } else {
-      console.log(result);
       res.status(201).json(result);
     }
   });

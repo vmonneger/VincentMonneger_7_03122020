@@ -24,7 +24,8 @@ exports.createUser = (req, res, next) => {
         nom: req.body.nom,
         prenom: req.body.prenom,
         email: req.body.email,
-        password: hash
+        password: hash,
+        admin: 0
       })
       User.create(newUser, (err, result) => {
         // Erreur de duplication mysql 1062
@@ -51,6 +52,7 @@ exports.loginUser = (req, res, next) => {
         }
         res.status(201).json({
           user_id: result[0].id,
+          admin: result[0].admin,
           token: jwt.sign(
             { user_id: result[0].id },
             'RANDOM_TOKEN_SECRET',
@@ -91,6 +93,20 @@ exports.deleteUser = (req, res, next) => {
       res.status(400).json({ error: "Utilisateur introuvable." });
     } else {
       res.status(201).json({ message: "Utilisateur supprimé !" });
+    }
+  });
+};
+
+exports.updateUser = (req, res, next) => {
+  User.update(req.params.id, req.body.admin, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err });
+    } else {
+      if (req.body.admin == 1 ) {
+        res.status(201).json({ message: "Il est devenu admin !" });
+      } else {
+        res.status(201).json({ message: "Il n'est plus admin !" });
+      }
     }
   });
 };

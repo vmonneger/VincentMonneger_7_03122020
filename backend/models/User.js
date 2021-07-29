@@ -7,6 +7,7 @@ const User = function(user) {
     this.prenom = user.prenom;
     this.email = user.email;
     this.password = user.password;
+    this.admin = user.admin;
 };
 
 User.create = (newUser, result) => {
@@ -35,7 +36,7 @@ User.login = (email, result) => {
 };
 
 User.getOne = (id, result) => {
-    dbConnection.query("SELECT nom, prenom, email FROM users WHERE id = ?", id, (err, res) => {
+    dbConnection.query("SELECT nom, prenom, email, id, admin FROM users WHERE id = ?", id, (err, res) => {
         // affectedRows si aucune ligne dans la BDD n'a été supprimé
         if (err || res.affectedRows === 0) {
             console.log(err);
@@ -70,6 +71,20 @@ User.delete = (id, result) => {
             result(null, res);
         }
     });
+};
+
+User.update = (id, newAdmin, result) => {
+    dbConnection.query("UPDATE users SET admin = ? WHERE id = ?", 
+    [newAdmin, id], (err, res) => {
+        if (err) {
+            console.log(err);
+            console.log(newAdmin);
+            result(null, err);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
+    })
 };
 
 module.exports = User;

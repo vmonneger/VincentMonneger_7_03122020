@@ -8,5 +8,6 @@ router.post("/login", userCtrl.loginUser);
 router.get("/account/:id", userCtrl.getOneUser);
 router.get("/account", userCtrl.getAllUser);
 router.delete("/account/:id", auth, userCtrl.deleteUser);
+router.patch("/account/:id", auth, userCtrl.updateUser);
 
 module.exports = router;

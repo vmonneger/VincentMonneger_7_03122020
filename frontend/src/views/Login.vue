@@ -49,9 +49,12 @@ const axios = require('axios');
         password: this.form.password
         })
         .then((response) => {
+          // localStorage.clear();
           localStorage.setItem("token", response.data.token)
           localStorage.setItem("user_id", response.data.user_id)
-          console.log(response);
+          localStorage.setItem("admin", response.data.admin)
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+          console.log(response.data);
           this.$router.push('Article')
         })
         .catch(function (error) {

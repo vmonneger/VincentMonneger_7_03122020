@@ -9,23 +9,21 @@ const Article = function(article) {
 
 Article.create = (newArticle, result) => {
     dbConnection.query("INSERT INTO articles SET ?", newArticle, (err, res) => {
-        if (err) {
+        if (err || result.errno === 1406) {
             console.log(err);
             result(null, err);
         } else {
-            console.log("Article créé !");
             result(null, res);
         }
     });
 };
 
 Article.getAll = (result) => {
-    dbConnection.query("SELECT * FROM articles", (err, res) => {
+    dbConnection.query("SELECT articles.*, users.nom, users.prenom, COUNT(commentaires.article_id) AS nbre_comm, MAX(commentaires.date) AS last_comm FROM articles INNER JOIN users ON articles.user_id = users.id LEFT JOIN commentaires ON commentaires.article_id = articles.id GROUP BY articles.id ORDER BY articles.date DESC;", (err, res) => {
         if (err) {
             console.log(err);
             result(null, err);
         } else {
-            console.log("Les articles sont affichés.");
             result(null, res);
         }
     })
@@ -37,7 +35,6 @@ Article.getOne = (id, result) => {
             console.log(err);
             result(null, err);
         } else {
-            console.log(res);
             result(null, res);
         }
     })
@@ -49,7 +46,6 @@ Article.getAllUser = (id, result) => {
             console.log(err);
             result(null, err);
         } else {
-            console.log(res);
             result(null, res);
         }
     })
@@ -62,7 +58,6 @@ Article.update = (id, newArticle, result) => {
             console.log(err);
             result(null, err);
         } else {
-            console.log(res);
             result(null, res);
         }
     })

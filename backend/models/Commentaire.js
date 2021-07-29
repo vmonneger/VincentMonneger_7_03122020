@@ -25,7 +25,6 @@ Commentaire.getAll = (id, result) => {
             console.log(err);
             result(null, err);
         } else {
-            console.log(res);
             result(null, res);
         }
     })
@@ -37,7 +36,6 @@ Commentaire.getOne = (id, result) => {
             console.log(err);
             result(null, err);
         } else {
-            console.log(res);
             result(null, res);
         }
     })
@@ -50,7 +48,6 @@ Commentaire.update = (id, newCommentaire, result) => {
             console.log(err);
             result(null, err);
         } else {
-            console.log(res);
             result(null, res);
         }
     })
@@ -67,19 +64,8 @@ Commentaire.delete = (id, result) => {
     })
 };
 
-Commentaire.lastId = (result) => {
-    dbConnection.query("SELECT MAX(id) AS last_id FROM commentaires", (err, res) => {
-        if (err || res.affectedRows === 0) {
-            console.log(err);
-            result(null, err);
-        } else {
-            result(null, res);
-        }
-    })
-};
-
 Commentaire.last = (result) => {
-    dbConnection.query("SELECT commentaires.*, users.nom, users.prenom, articles.titre FROM commentaires INNER JOIN articles ON commentaires.article_id = articles.id INNER JOIN users ON commentaires.user_id = users.id WHERE commentaires.id =(SELECT MAX(id) FROM commentaires)", (err, res) => {
+    dbConnection.query("SELECT commentaires.*, users.nom, users.prenom, articles.titre FROM commentaires LEFT JOIN articles ON commentaires.article_id = articles.id LEFT JOIN users ON commentaires.user_id = users.id WHERE commentaires.id in (select max(id) from commentaires);", (err, res) => {
         if (err || res.affectedRows === 0) {
             console.log(err);
             result(null, err);

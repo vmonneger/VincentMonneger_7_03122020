@@ -1,54 +1,70 @@
 <template>
-<div v-if="lastCommentaire.length" class="container">
+<div class="container">
   <div class="row">
     <div class="col-lg-12">
       <div class="wrapper wrapper-content animated fadeInRight">
 
-        <div class="ibox-content m-b-sm border-bottom">
+        <div class="m-b-sm border-bottom">
           <div class="p-xs">
             <h2>Bienvennue dans le forum</h2>
           </div>
         </div>
-        <router-link :to="{name: 'Commentaire', params: {id: lastCommentaire[0].article_id} }">
-          <p>Dernier commentaire: {{ lastCommentaire[0].prenom }} {{ lastCommentaire[0].nom }} sur l'article "{{ lastCommentaire[0].titre }}" le {{ lastCommentaire[0].date }}</p>
+        <router-link v-if="lastCommentaire.length" :to="{name: 'Commentaire', params: {id: lastCommentaire[0].article_id} }" class="text-decoration-none">
+          <p>Dernier commentaire: {{ lastCommentaire[0].prenom }} {{ lastCommentaire[0].nom }} sur l'article "{{ lastCommentaire[0].titre }}" le {{ lastCommentaire[0].date | moment("DD/MM/YYYY HH:mm:ss") }}</p>
         </router-link>
+        <div class="text-right">
+          <button v-on:click="post()" class="m-0 btn btn-outline-primary">Poster un article</button>
+        </div>
 
-        <div class="ibox-content forum-container">
+        <div class="forum-container">
 
           <div class="forum-title">
-            <div v-if="totalArticle.length" class="pull-right forum-desc">
-              <p>Total d'article: {{ totalArticle[0].total }}</p>
+            <div v-if="totalArticle.length" class="pull-right">
+              <p>Total d'article: {{ totalArticle }}</p>
             </div>
           </div>
 
-          <div v-for="article in articles" :key="article.id" class="forum-item active" >
-            <div class="row">
-              <div class="col-md-9">
-                <div class="forum-icon">
-                    <i class="fa fa-shield"></i>
-                </div>
-                <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-item-title">{{article.titre}}</router-link>
-                <div class="forum-sub-title">{{article.contenu}}</div>
+          <div v-for="(article,index) in articles" :key="article.id" class="row forum-item active" >
+            <div class="col-md-9">
+              <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-item-title"> {{ article.titre }}</router-link>
+              <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-sub-title text-decoration-none">{{ article.contenu }}</router-link>
+              <!-- <div class="forum-sub-title">{{article.contenu}}</div> -->
+            </div>
+            <div class="col-6 col-lg-1 text-lg-center text-lg-right mt-5 mt-lg-0">
+              <span class="views-number">
+                  {{ article.date | moment("DD/MM/YYYY HH:mm:ss") }}
+              </span>
+              <div>
+                  <small>Date</small>
               </div>
-              <div class="col-md-1 forum-info">
-                <span class="views-number">
-                    {{ article.date }}
-                </span>
-                <div>
-                    <small>Vues</small>
-                </div>
+            </div>
+            <div class="col-6 col-lg-2 text-lg-center text-right mt-5 mt-lg-0 mb-4 mb-lg-0">
+              <span class="views-number">
+                  {{ article.nbre_comm }}
+              </span>
+              <div>
+                  <small v-if="article.nbre_comm > 1">Commentaires</small>
+                  <small v-else>Commentaire</small>
               </div>
-              <div class="col-md-2 forum-info">
-                <span class="views-number">
-                    368
-                </span>
-                <div>
-                    <small>Commentaires</small>
-                </div>
+            </div>
+            <div class="col-6 col-lg-3 text-lg-right mt-4">
+              <p v-on:click="redirect(article.user_id)" class="pointer">{{ article.prenom }} {{ article.nom }}</p>
+            </div>
+            <div v-if="admin == 1" class="col-6 col-lg-9 text-right align-self-center">
+              <div>
+                <b-button v-b-modal="modalId(article.id)" variant="outline-danger">Supprimer Article</b-button>
+
+                <b-modal hide-footer ok-title = "Supprimer" ok-variant = "danger" cancel-title = "Annuler" :id="'modal-' + article.id" title="Supprimer">
+                  <p class="my-4">Etes vous sûr de vouloir supprimer l'article ?</p>
+                  <div class="text-right">
+                    <b-button variant="secondary" @click="$bvModal.hide('modal-' + article.id)">Annuler</b-button>
+                    <b-button @click="deleteArticle(index, article.id)" class="ml-2" variant="danger">Supprimer Article</b-button>
+                  </div>
+                </b-modal>
               </div>
-              <div class="d-flex justify-content-end">
-                <button v-on:click="post()" class="m-0 btn btn-outline-primary">Poster un article</button>
-              </div>
+            </div>
+            <div v-if="article.last_comm" class="col-12 text-right">
+              <small>Dernier commentaire: le {{ article.last_comm | moment("DD/MM/YYYY à HH:mm:ss") }}</small>
             </div>
           </div>
         </div>
@@ -66,7 +82,9 @@ export default {
     return {
       articles: [],
       lastCommentaire: [],
-      totalArticle: []
+      totalArticle: [],
+      totalCommentaire: [],
+      admin: []
     }
   },
   mounted() {
@@ -82,29 +100,45 @@ export default {
     })
     axios.get(`http://localhost:3000/api/auth/totalArticle`)
     .then((response) => {
-      this.totalArticle = response.data
+      console.log(response)
+      this.totalArticle = response.data[0].total
       console.log(this.totalArticle)
+      console.log("le length")
     })
+    this.admin = localStorage.getItem('admin')
+    console.log("admin ici")
+    console.log(this.admin)
   },
   methods: {
     post() {
       this.$router.push({ name: 'PostArticle'})
-    }
+    },
+    modalId(id) {
+      return "modal-" + id
+    },
+    deleteArticle(index, id) {
+      axios.delete(`http://localhost:3000/api/auth/oneArticle/${id}`)
+      .then((response) => {
+        console.log(response.data);
+        this.articles.splice(index, 1);
+        this.totalArticle = this.totalArticle - 1;
+      })
+    },
+    redirect(userId) {
+      this.$router.push({ name: 'User', params: { id: userId }})
+    },
   }
 }
 </script>
 
 <style scoped>
-body{margin-top:20px;
-background:#eee;
+.pointer:hover {
+  cursor: pointer;
+  color: #1ab394;
 }
 
 .white-bg {
     background-color: #ffffff;
-}
-.page-heading {
-    border-top: 0;
-    padding: 0 10px 20px 10px;
 }
 
 .forum-post-container .media {
@@ -112,50 +146,13 @@ background:#eee;
   padding: 20px 10px 20px 10px;
   border-bottom: 1px solid #f1f1f1;
 }
-.forum-avatar {
-  float: left;
-  margin-right: 20px;
-  text-align: center;
-  width: 110px;
-}
-.forum-avatar .img-circle {
-  height: 48px;
-  width: 48px;
-}
-.author-info {
-  color: #676a6c;
-  font-size: 11px;
-  margin-top: 5px;
-  text-align: center;
-}
-.forum-post-info {
-  padding: 9px 12px 6px 12px;
-  background: #f9f9f9;
-  border: 1px solid #f1f1f1;
-}
+
 .media-body > .media {
   background: #f9f9f9;
   border-radius: 3px;
   border: 1px solid #f1f1f1;
 }
-.forum-post-container .media-body .photos {
-  margin: 10px 0;
-}
-.forum-photo {
-  max-width: 140px;
-  border-radius: 3px;
-}
-.media-body > .media .forum-avatar {
-  width: 70px;
-  margin-right: 10px;
-}
-.media-body > .media .forum-avatar .img-circle {
-  height: 38px;
-  width: 38px;
-}
-.mid-icon {
-  font-size: 66px;
-}
+
 .forum-item {
   margin: 10px 0;
   padding: 10px 0 20px;
@@ -180,18 +177,11 @@ background:#eee;
 .forum-title {
   margin: 15px 0 15px 0;
 }
-.forum-info {
-  text-align: center;
-}
+
 .forum-desc {
   color: #999;
 }
-.forum-icon {
-  float: left;
-  width: 30px;
-  margin-right: 20px;
-  text-align: center;
-}
+
 a.forum-item-title {
   color: inherit;
   display: block;
@@ -201,104 +191,14 @@ a.forum-item-title {
 a.forum-item-title:hover {
   color: inherit;
 }
-.forum-icon .fa {
-  font-size: 30px;
-  margin-top: 8px;
-  color: #9b9b9b;
-}
+
 .forum-item.active .fa {
   color: #1ab394;
 }
 .forum-item.active a.forum-item-title {
   color: #1ab394;
 }
-@media (max-width: 992px) {
-  .forum-info {
-    margin: 15px 0 10px 0;
-    /* Comment this is you want to show forum info in small devices */
-    display: none;
-  }
-  .forum-desc {
-    float: none !important;
-  }
-}
 
-
-
-
-
-.ibox {
-  clear: both;
-  margin-bottom: 25px;
-  margin-top: 0;
-  padding: 0;
-}
-.ibox.collapsed .ibox-content {
-  display: none;
-}
-.ibox.collapsed .fa.fa-chevron-up:before {
-  content: "\f078";
-}
-.ibox.collapsed .fa.fa-chevron-down:before {
-  content: "\f077";
-}
-.ibox:after,
-.ibox:before {
-  display: table;
-}
-.ibox-title {
-  -moz-border-bottom-colors: none;
-  -moz-border-left-colors: none;
-  -moz-border-right-colors: none;
-  -moz-border-top-colors: none;
-  background-color: #ffffff;
-  border-color: #e7eaec;
-  border-image: none;
-  border-style: solid solid none;
-  border-width: 3px 0 0;
-  color: inherit;
-  margin-bottom: 0;
-  padding: 14px 15px 7px;
-  min-height: 48px;
-}
-.ibox-content {
-  background-color: #ffffff;
-  color: inherit;
-  padding: 15px 20px 20px 20px;
-  border-color: #e7eaec;
-  border-image: none;
-  /* border-style: solid solid none; */
-  border-width: 1px 0;
-}
-.ibox-footer {
-  color: inherit;
-  border-top: 1px solid #e7eaec;
-  font-size: 90%;
-  background: #ffffff;
-  padding: 10px 15px;
-}
-
-.message-input {
-    height: 90px !important;
-}
-.form-control, .single-line {
-    background-color: #FFFFFF;
-    background-image: none;
-    border: 1px solid #e5e6e7;
-    border-radius: 1px;
-    color: inherit;
-    display: block;
-    padding: 6px 12px;
-    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-    width: 100%;
-    font-size: 14px;
-}
-.text-navy {
-    color: #1ab394;
-}
-.mid-icon {
-    font-size: 66px !important;
-}
 .m-b-sm {
     margin-bottom: 10px;
 }
