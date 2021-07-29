@@ -73,10 +73,10 @@
                         <b-button v-b-modal="modalId(commentaire.id)" variant="outline-danger">Supprimer Commentaire</b-button>
 
                         <b-modal hide-footer ok-title = "Supprimer" ok-variant = "danger" cancel-title = "Annuler" :id="'modal-' + commentaire.id" title="Supprimer">
-                        <p class="my-4">Etes vous sûr de vouloir supprimer l'article ?</p>
+                        <p class="my-4">Etes vous sûr de vouloir supprimer le commentaire ?</p>
                         <div class="text-right">
                             <b-button variant="secondary" @click="$bvModal.hide('modal-' + commentaire.id)">Annuler</b-button>
-                            <b-button @click="deleteArticle(index, commentaire.id)" class="ml-2" variant="danger">Supprimer Commentaire</b-button>
+                            <b-button @click="deleteCommentaire(index, commentaire.id)" class="ml-2" variant="danger">Supprimer Commentaire</b-button>
                         </div>
                         </b-modal>
                     </div>

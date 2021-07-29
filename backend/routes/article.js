@@ -5,7 +5,7 @@ const articleCtrl = require("../controllers/article");
 const multer = require('../middleware/multer-config');
 const auth = require("../middleware/auth");
 
-router.post("/postArticle", auth, articleCtrl.createArticle);
+router.post("/postArticle", auth, multer, articleCtrl.createArticle);
 router.get("/allArticle", auth, articleCtrl.getAllArticle);
 router.get("/oneArticle/:id", auth, articleCtrl.getOneArticle);
 router.get("/totalArticle", auth, articleCtrl.totalArticle);

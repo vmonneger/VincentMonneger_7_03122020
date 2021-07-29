@@ -5,6 +5,7 @@ const Article = function(article) {
     this.titre = article.titre;
     this.contenu = article.contenu;
     this.date = new Date()
+    this.image = article.image
 };
 
 Article.create = (newArticle, result) => {

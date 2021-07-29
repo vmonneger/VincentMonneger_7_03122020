@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express');
+const path = require('path');
 const helmet = require("helmet");
 
 const userRoute = require("./routes/user");
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use("/api/auth", userRoute);
 app.use("/api/auth", articleRoute);
 app.use("/api/auth", commentaireRoute);

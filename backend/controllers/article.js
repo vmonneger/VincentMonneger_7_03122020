@@ -13,12 +13,14 @@ exports.createArticle =  (req, res, next) => {
       user_id: req.body.user_id,
       titre: req.body.titre,
       contenu: req.body.contenu,
-      date: new Date()
+      date: new Date(),
+      image: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     })
     Article.create(newArticle, (err, result) => {
       if (err || result.errno === 1406) {
         res.status(400).json({ error: "Le contenu contient trop de charactères." });
       } else {
+        console.log(newArticle);
         res.status(201).json({ message: "Votre article a été enregistré !" });
       }
     });
