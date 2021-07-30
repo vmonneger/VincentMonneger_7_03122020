@@ -47,6 +47,7 @@ export default {
       localStorage.clear();
       delete axios.defaults.headers.common["Authorization"];
       this.$router.push({ name: 'Login' })
+      this.$store.commit('updateLocalStorage');
       console.log("Vous êtes déconnecté.")
     }
   }

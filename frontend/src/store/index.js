@@ -9,6 +9,10 @@ export default new Vuex.Store({
     admin: localStorage.getItem('admin')
   },
   mutations: {
+    updateLocalStorage (state) {
+      state.userId = localStorage.getItem('user_id');
+      state.admin = localStorage.getItem('admin');
+    }
   },
   actions: {
   },
