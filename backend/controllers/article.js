@@ -8,6 +8,22 @@ exports.createArticle =  (req, res, next) => {
     res.status(403).json({ error: "Vous devez ajouter un titre."})
   } else if (!req.body.contenu) {
     res.status(403).json({ error: "Vous devez ajouter du contenu."})
+  } else if (!req.file) {
+    const newArticle = new Article({
+      user_id: req.body.user_id,
+      titre: req.body.titre,
+      contenu: req.body.contenu,
+      date: new Date(),
+      image: null
+    })
+    Article.create(newArticle, (err, result) => {
+      if (err || result.errno === 1406) {
+        res.status(400).json({ error: "Le contenu contient trop de charactères." });
+      } else {
+        console.log(newArticle);
+        res.status(201).json({ message: "Votre article a été enregistré !" });
+      }
+    });
   } else {
     const newArticle = new Article({
       user_id: req.body.user_id,

@@ -12,7 +12,7 @@
       <p>{{ article[0].date | moment("DD/MM/YYYY HH:mm:ss") }}</p>
     </div>
     <div class="col-9">
-      <img :src="article[0].image" class="img-fluid rounded" alt="">
+      <img :src="article[0].image" class="img-fluid rounded mt-2" alt="">
       <p class="ml-2">{{ article[0].contenu }}</p>
     </div>
     <div class="col-3 text-center border-left border-info">
