@@ -21,37 +21,13 @@
         Votre mot de passe doit contenir minimun 8 charactères, une majuscule et un chiffre
       </small>
       </div>
-
-      <!-- <b-form-group id="input-group-2" label="Prenom:" label-for="input-2">
-        <b-form-input
-          id="input-2"
-          v-model="form.prenom"
-          placeholder="Entrer votre prénom"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group id="input-group-3" label="Email:" label-for="input-3">
-        <b-form-input
-          id="input-3"
-          v-model="form.email"
-          placeholder="Entrer votre email"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group id="input-group-4" label="Mot de passe:" label-for="input-4" description="Votre mot de passe doit contenir minimum 8 charactères, une majuscule et un chiffre.">
-        <b-form-input
-          id="input-4"
-          v-model="form.password"
-          placeholder="Entrer votre mot de passe"
-          required
-        ></b-form-input>
-      </b-form-group> -->
-
-        <div class="text-center">
-            <b-button type="submit" variant="primary">S'enregistrer</b-button>
-        </div>
+      <!-- *****ON RENVOIE LES ERREURS AU USER****** -->
+      <div v-if="form.errorBack" class="text-center text-danger font-weight-bold">
+        <p>{{ form.errorBack }}</p>
+      </div>
+      <div class="text-center">
+          <b-button type="submit" variant="primary">S'enregistrer</b-button>
+      </div>
     </form>
   </div>
 </template>
@@ -65,7 +41,8 @@ const axios = require('axios');
           nom: [],
           prenom: [],
           email: [],
-          password: []
+          password: [],
+          errorBack: ''
         }
       }
     },
@@ -83,7 +60,9 @@ const axios = require('axios');
           this.$router.push({ name: 'Login' })
         })
         .catch((error) => {
-          console.log(error);
+          // ON RENVOIE LES ERREURS AU USER
+          console.log(error.response.data);
+          this.form.errorBack = error.response.data.error
         });
       }
     }

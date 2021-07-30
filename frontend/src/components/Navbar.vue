@@ -41,13 +41,13 @@ export default {
   name: 'Navbar',
   methods: {
     redirect() {
-      const userId = localStorage.getItem('user_id')
-      this.$router.push({ name: 'User', params: { id: userId }})
+      this.$router.push({ name: 'User', params: { id: this.$store.state.userId }})
     },
     redirectDeco() {
       localStorage.clear();
       delete axios.defaults.headers.common["Authorization"];
       this.$router.push({ name: 'Login' })
+      console.log("Vous êtes déconnecté.")
     }
   }
 }

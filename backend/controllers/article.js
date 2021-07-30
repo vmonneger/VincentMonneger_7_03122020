@@ -1,4 +1,7 @@
 const Article = require('../models/Article');
+const fs = require('fs');
+const path = require("path");
+
 
 
 exports.createArticle =  (req, res, next) => {
@@ -20,7 +23,6 @@ exports.createArticle =  (req, res, next) => {
       if (err || result.errno === 1406) {
         res.status(400).json({ error: "Le contenu contient trop de charactères." });
       } else {
-        console.log(newArticle);
         res.status(201).json({ message: "Votre article a été enregistré !" });
       }
     });
@@ -36,7 +38,6 @@ exports.createArticle =  (req, res, next) => {
       if (err || result.errno === 1406) {
         res.status(400).json({ error: "Le contenu contient trop de charactères." });
       } else {
-        console.log(newArticle);
         res.status(201).json({ message: "Votre article a été enregistré !" });
       }
     });
@@ -46,7 +47,6 @@ exports.createArticle =  (req, res, next) => {
 exports.getAllArticle = (req, res, next) => {
   Article.getAll((err, result) => {
     if (err) {
-      console.log(result);
       res.status(500).json({ error: err });
     } else {
       res.status(201).json(result);
@@ -56,7 +56,6 @@ exports.getAllArticle = (req, res, next) => {
 
 exports.getOneArticle = (req, res, next) => {
   Article.getOne(req.params.id, (err, result) => {
-    console.log(result);
     if (err) {
       res.status(500).json({ error: err });
     } else {
@@ -86,11 +85,26 @@ exports.updateArticle = (req, res, next) => {
 };
 
 exports.deleteArticle = (req, res, next) => {
-  Article.delete(req.params.id, (err, result) => {
-    if (err) {
-      res.status(400).json({ error: err });
+  Article.getOne(req.params.id, (err, result) => {
+    if (result[0].image) {
+      const filename = result[0].image.split('/images/')[1];
+      fs.unlink(path.resolve(__dirname, `../images/${filename}`), (err) => {
+        Article.delete(req.params.id, (err, result) => {
+          if (err) {
+            res.status(400).json({ error: err });
+          } else {
+            res.status(201).json({message: "Article supprimé !"});
+          }
+        })
+      })
     } else {
-      res.status(201).json({message: "Article supprimé !"});
+      Article.delete(req.params.id, (err, result) => {
+        if (err) {
+          res.status(400).json({ error: err });
+        } else {
+          res.status(201).json({message: "Article supprimé !"});
+        }
+      })
     }
   })
 };
@@ -107,7 +121,6 @@ exports.totalArticle = (req, res, next) => {
 
 exports.allArticleUser = (req, res, next) => {
   Article.getAllUser(req.params.id, (err, result) => {
-    console.log(result);
     if (err) {
       res.status(500).json({ error: err });
     } else {

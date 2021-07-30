@@ -5,30 +5,35 @@
       <div class="wrapper wrapper-content animated fadeInRight">
 
         <div class="m-b-sm border-bottom">
-          <div class="p-xs">
+          <!-- ********AVERTI SUR USER PAS LOG********* -->
+          <div v-if="!$store.state.userId" class="text-danger">
+            <h2>Vous n'etes pas loggé !</h2>
+          </div>
+          <div v-else class="p-xs">
             <h2>Bienvennue dans le forum</h2>
           </div>
         </div>
+        <!-- *****LE LIEN DU DERNIER COMMENTAIRE POSTE***** -->
         <router-link v-if="lastCommentaire.length" :to="{name: 'Commentaire', params: {id: lastCommentaire[0].article_id} }" class="text-decoration-none">
           <p>Dernier commentaire: {{ lastCommentaire[0].prenom }} {{ lastCommentaire[0].nom }} sur l'article "{{ lastCommentaire[0].titre }}" le {{ lastCommentaire[0].date | moment("DD/MM/YYYY HH:mm:ss") }}</p>
         </router-link>
         <div class="text-right">
-          <button v-on:click="post()" class="m-0 btn btn-outline-primary">Poster un article</button>
+          <button v-if="$store.state.userId" v-on:click="post()" class="m-0 btn btn-outline-primary">Poster un article</button>
         </div>
 
         <div class="forum-container">
-
           <div class="forum-title">
-            <div v-if="totalArticle.length" class="pull-right">
+            <div v-if="totalArticle > 0" class="pull-right">
               <p>Total d'article: {{ totalArticle }}</p>
             </div>
           </div>
-
+          <!-- *****LA BOUCLE SUR LES ARTICLES***** -->
           <div v-for="(article,index) in articles" :key="article.id" class="row forum-item active" >
             <div class="col-md-9">
-              <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-item-title"> {{ article.titre }}</router-link>
+              <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-item-title mb-3"> {{ article.titre }}
+                <small v-if="article.image">*Article avec image*</small>
+              </router-link>
               <router-link :to="{name: 'Commentaire', params: {id: article.id} }" class="forum-sub-title text-decoration-none">{{ article.contenu }}</router-link>
-              <!-- <div class="forum-sub-title">{{article.contenu}}</div> -->
             </div>
             <div class="col-6 col-lg-1 text-lg-center text-lg-right mt-5 mt-lg-0">
               <span class="views-number">
@@ -50,9 +55,10 @@
             <div class="col-6 col-lg-3 text-lg-right mt-4">
               <p v-on:click="redirect(article.user_id)" class="pointer">{{ article.prenom }} {{ article.nom }}</p>
             </div>
-            <div v-if="admin == 1" class="col-6 col-lg-9 text-right align-self-center">
+            <!-- *****LA PARTIE DU BUTTON AVEC MODAL QUI APPARAIT SEULEMENT SI ADMIN OU USER CONCERNE***** -->
+            <div v-if="$store.state.admin == 1 || article.user_id == $store.state.userId" class="col-6 col-lg-9 text-right align-self-center">
               <div>
-                <b-button v-b-modal="modalId(article.id)" variant="outline-danger">Supprimer Article</b-button>
+                <b-button v-b-modal="'modal-' + article.id" variant="outline-danger">Supprimer Article</b-button>
 
                 <b-modal hide-footer ok-title = "Supprimer" ok-variant = "danger" cancel-title = "Annuler" :id="'modal-' + article.id" title="Supprimer">
                   <p class="my-4">Etes vous sûr de vouloir supprimer l'article ?</p>
@@ -63,6 +69,7 @@
                 </b-modal>
               </div>
             </div>
+
             <div v-if="article.last_comm" class="col-12 text-right">
               <small>Dernier commentaire: le {{ article.last_comm | moment("DD/MM/YYYY à HH:mm:ss") }}</small>
             </div>
@@ -83,8 +90,7 @@ export default {
       articles: [],
       lastCommentaire: [],
       totalArticle: [],
-      totalCommentaire: [],
-      admin: []
+      totalCommentaire: []
     }
   },
   mounted() {
@@ -92,41 +98,37 @@ export default {
     .then((response) => {
       this.articles = response.data
     })
-    axios.get(`http://localhost:3000/api/auth/lastCommentaire`)
-    .then((response) => {
-      this.lastCommentaire = response.data
-      console.log("le resultat")
-      console.log(this.lastCommentaire)
-    })
     axios.get(`http://localhost:3000/api/auth/totalArticle`)
     .then((response) => {
-      console.log(response)
       this.totalArticle = response.data[0].total
-      console.log(this.totalArticle)
-      console.log("le length")
     })
-    this.admin = localStorage.getItem('admin')
-    console.log("admin ici")
-    console.log(this.admin)
+    this.lastComm();
   },
   methods: {
     post() {
       this.$router.push({ name: 'PostArticle'})
     },
-    modalId(id) {
-      return "modal-" + id
-    },
     deleteArticle(index, id) {
       axios.delete(`http://localhost:3000/api/auth/oneArticle/${id}`)
       .then((response) => {
-        console.log(response.data);
+        // ON MET A JOUR LA DATA ARTICLES EN SUPPRIMANT ELEMENT DE L'ARRAY
         this.articles.splice(index, 1);
+        // ON MET A JOUR LA DATA TOTAL ARTICLE AVEC -1
         this.totalArticle = this.totalArticle - 1;
+        // ON REFAIT UNE REQUETE POUR AVOIR LE DERNIER COMMENTAIRE
+        this.lastComm();
+        console.log(response.data);
       })
     },
     redirect(userId) {
       this.$router.push({ name: 'User', params: { id: userId }})
     },
+    lastComm() {
+      axios.get(`http://localhost:3000/api/auth/lastCommentaire`)
+      .then((response) => {
+        this.lastCommentaire = response.data
+      })
+    }
   }
 }
 </script>

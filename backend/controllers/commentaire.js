@@ -15,7 +15,6 @@ exports.createCommentaire =  (req, res, next) => {
         message: req.body.message,
         date: new Date()
       })
-      console.log(newCommentaire);
       Commentaire.create(newCommentaire, (err, result) => {
         if (err || result.errno === 1452) {
           res.status(400).json({ error: "L'article ou l'user id n'existe pas dans la BDD." });
@@ -28,7 +27,6 @@ exports.createCommentaire =  (req, res, next) => {
   
   exports.getAllCommentaire = (req, res, next) => {
     Commentaire.getAll(req.params.id, (err, result) => {
-      console.log(result);
       if (err) {
         res.status(500).json({ error: err });
       } else {
@@ -39,7 +37,6 @@ exports.createCommentaire =  (req, res, next) => {
   
   exports.getOneCommentaire = (req, res, next) => {
     Commentaire.getOne(req.params.id, (err, result) => {
-      console.log(result);
       if (err) {
         res.status(500).json({ error: err });
       } else {
@@ -77,7 +74,6 @@ exports.createCommentaire =  (req, res, next) => {
 
   exports.getLastCommentaire = (req, res, next) => {
     Commentaire.last((err, result) => {
-      console.log(result);
       if (err) {
         res.status(500).json({ error: err });
       } else {
