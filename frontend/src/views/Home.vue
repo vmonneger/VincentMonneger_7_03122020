@@ -65,7 +65,7 @@ a:after{
   left: 0;
   width: 0;
   height: 100%;
-  background: #ff003b;
+  background: #FD2D01;
   transition: all .35s;
 }
 
