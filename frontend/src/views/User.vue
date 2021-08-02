@@ -119,10 +119,8 @@ export default {
             axios.delete(`http://localhost:3000/api/auth/account/${this.$route.params.id}`)
             .then((response) => {
                 delete axios.defaults.headers.common["Authorization"];
-                // ON NETTOYE LE LOCALSTORAGE
-                localStorage.clear();
                 // ON MET A JOUR LE STORE
-                this.$store.commit('updateLocalStorage');
+                this.$store.commit('updateState');
                 // ET ON REDIRIGE VERS LE SIGNUP
                 this.$router.push({ name: 'Signup' });
                 console.log(response.data);

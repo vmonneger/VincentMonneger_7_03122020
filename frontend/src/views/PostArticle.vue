@@ -42,7 +42,7 @@ export default {
         onSubmit() {
             let formData = new FormData();
             // APPEND TRANSFORMATION EN OBJET KEY VALUE
-            formData.append('user_id', localStorage.getItem('user_id'));
+            formData.append('user_id', this.$store.state.userId);
             formData.append('titre', this.form.titre);
             formData.append('contenu', this.form.contenu);
             formData.append('image', this.form.image);

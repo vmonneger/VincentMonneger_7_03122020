@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode"
 const axios = require('axios');
   export default {
     name: 'Login',
@@ -70,15 +71,18 @@ const axios = require('axios');
         password: this.form.password
         })
         .then((response) => {
-          // ON STOCK TOUTES LES DONNEES NECESSAIRES DANS LE LOCALSTORAGE
-          localStorage.setItem("token", response.data.token)
-          localStorage.setItem("user_id", response.data.user_id)
-          localStorage.setItem("admin", response.data.admin)
+          // ON RECUPERE LE TOKEN ET ON LE DECODE POUR RECUPERER LES INFOS
+          const token = response.data.token
+          const decodeToken = jwt_decode(token)
+          // ON STOCK LE TOKEN DANS LE LOCALSTORAGE
+          localStorage.setItem("token", token)
+
           // ON ENREGISTRE LE TOKEN DANS AXIOS
-          axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
           // ON MET A JOUR LE STORE
-          this.$store.state.admin = localStorage.getItem("admin")
-          this.$store.state.userId = localStorage.getItem("user_id")
+          this.$store.state.token = token;
+          this.$store.state.admin = decodeToken.admin;
+          this.$store.state.userId = decodeToken.user_id;
           this.$router.push('Article')
           console.log(response.data);
         })

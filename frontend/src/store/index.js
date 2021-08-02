@@ -5,13 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userId: localStorage.getItem('user_id'),
-    admin: localStorage.getItem('admin')
+    token: localStorage.getItem('token'),
+    userId: null,
+    admin: null
   },
   mutations: {
-    updateLocalStorage (state) {
-      state.userId = localStorage.getItem('user_id');
-      state.admin = localStorage.getItem('admin');
+    updateState (state) {
+      state.token = null;
+      state.userId = null;
+      state.admin = null;
     }
   },
   actions: {

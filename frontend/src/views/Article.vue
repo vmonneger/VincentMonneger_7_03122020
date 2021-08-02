@@ -6,19 +6,19 @@
 
         <div class="m-b-sm border-bottom">
           <!-- ********AVERTI SUR USER PAS LOG********* -->
-          <div v-if="!$store.state.userId" class="text-danger">
+          <div v-if="!$store.state.token" class="text-danger">
             <h2>Vous n'etes pas loggé !</h2>
           </div>
           <div v-else class="p-xs">
-            <h2>Bienvennue dans le forum</h2>
+            <h1>Bienvennue dans le forum</h1>
           </div>
         </div>
         <!-- *****LE LIEN DU DERNIER COMMENTAIRE POSTE***** -->
-        <router-link v-if="lastCommentaire.length" :to="{name: 'Commentaire', params: {id: lastCommentaire[0].article_id} }" class="text-decoration-none">
+        <router-link v-if="lastCommentaire.length" :to="{name: 'Commentaire', params: {id: lastCommentaire[0].article_id} }" class="text-decoration-none text-danger">
           <p>Dernier commentaire: {{ lastCommentaire[0].prenom }} {{ lastCommentaire[0].nom }} sur l'article "{{ lastCommentaire[0].titre }}" le {{ lastCommentaire[0].date | moment("DD/MM/YYYY HH:mm:ss") }}</p>
         </router-link>
         <div class="text-right">
-          <button v-if="$store.state.userId" v-on:click="post()" class="m-0 btn btn-outline-primary">Poster un article</button>
+          <button v-if="$store.state.userId" v-on:click="post()" class="m-0 btn btn-outline-danger">Poster un article</button>
         </div>
 
         <div class="forum-container">
@@ -136,7 +136,7 @@ export default {
 <style scoped>
 .pointer:hover {
   cursor: pointer;
-  color: #1ab394;
+  color: #FD2D01;
 }
 
 .white-bg {
@@ -170,10 +170,10 @@ export default {
   padding: 30px !important;
 }
 .forum-item small {
-  color: #999;
+  color: black;
 }
 .forum-item .forum-sub-title {
-  color: #999;
+  color: black;
   margin-left: 50px;
 }
 .forum-title {
@@ -181,24 +181,24 @@ export default {
 }
 
 .forum-desc {
-  color: #999;
+  color: black;
 }
 
 a.forum-item-title {
   color: inherit;
   display: block;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 800;
 }
 a.forum-item-title:hover {
   color: inherit;
 }
 
 .forum-item.active .fa {
-  color: #1ab394;
+  color: #FD2D01;
 }
 .forum-item.active a.forum-item-title {
-  color: #1ab394;
+  color: #FD2D01;
 }
 
 .m-b-sm {

@@ -3,20 +3,20 @@
   <h1 class="text-center">{{ article[0].titre }}</h1>
   <div class="text-right">
     <div class="text-center mb-4 mt-5">
-      <button v-on:click="post()" class="col-6 m-0 btn btn-outline-primary">Poster un commentaire</button>
+      <button v-on:click="post()" class="col-6 m-0 btn btn-outline-danger">Poster un commentaire</button>
     </div>
       <p v-if="totalCommentaire" class="text-left">Total de commentaire: {{ totalCommentaire }}</p>
   </div>
   <!-- ********ICI L'ARTICLE********** -->
-  <div class="row border border-info p-0 rounded mb-4 ml-0 mr-0">
-    <div class="col-12 bg-info text-right">
+  <div class="row border bdr-color p-0 rounded mb-4 ml-0 mr-0">
+    <div class="col-12 bg-color text-right font-weight-bold font-size">
       <p>{{ article[0].date | moment("DD/MM/YYYY HH:mm:ss") }}</p>
     </div>
     <div class="col-sm-9 col-12">
       <img :src="article[0].image" class="img-fluid rounded mt-2" alt="">
       <p class="ml-2">{{ article[0].contenu }}</p>
     </div>
-    <div class="col-sm-3 text-sm-center text-right border-left border-info">
+    <div class="col-sm-3 text-sm-center text-right bdr-color">
       <p v-on:click="redirect(article[0].user_id)" class="pointer">{{ article[0].prenom }} {{ article[0].nom }}</p>
     </div>
   </div>
@@ -99,7 +99,19 @@ export default {
 <style scoped>
 .pointer:hover {
   cursor: pointer;
-  color: #1ab394;
+  color: #FD2D01;
+}
+
+.bg-color {
+  background-color:#FD2D01;
+}
+
+.bdr-color {
+  border-left: 1px solid #FD2D01;
+}
+
+.font-size {
+  font-size: 20px;
 }
 
 </style>
